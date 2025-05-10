@@ -4,10 +4,9 @@ require("@nomicfoundation/hardhat-toolbox");
 module.exports = {
   solidity: "0.8.20",
   paths: {
-    sources: "./hardhat_contracts",   // was "./contracts"
+    sources: "./hardhat_contracts",
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts"
-  },
-  // ... rest of your config
+  }
 };
