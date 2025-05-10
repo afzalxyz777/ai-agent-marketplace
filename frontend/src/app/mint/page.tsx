@@ -14,6 +14,11 @@ const MintingPage = () => {
   const [error, setError] = useState<string | null>(null)
 
   const mintNFT = async () => {
+    if (!isConnected) {
+      setError('Please connect your wallet first')
+      return
+    }
+
     setMinting(true)
     setSuccess(null)
     setError(null)
@@ -25,22 +30,19 @@ const MintingPage = () => {
 
       const provider = new ethers.BrowserProvider(window.ethereum)
       const signer = await provider.getSigner()
-      const network = await provider.getNetwork()
-      const chainId = Number(network.chainId)
-
-      // Allow both Sepolia and local network
-      if (chainId !== 11155111 && chainId !== 31337) {
-        throw new Error(`Please switch to Sepolia or local network. Current: ${chainId}`)
-      }
-
+      
+      // Create contract instance
       const contract = new ethers.Contract(AIAgentNFT_ADDRESS, AIAgentNFT_ABI, signer)
+
+      // Call mint function without parameters
       const tx = await contract.mint()
       console.log("Transaction sent:", tx.hash)
       
+      // Wait for transaction confirmation
       const receipt = await tx.wait()
       console.log("Transaction confirmed:", receipt)
       
-      setSuccess(`Successfully minted! Transaction: ${receipt.hash}`)
+      setSuccess(`Successfully minted! Transaction hash: ${tx.hash}`)
     } catch (err: any) {
       console.error("Minting error:", err)
       setError(err?.message || 'Transaction failed')
