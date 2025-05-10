@@ -20,6 +20,13 @@ contract AIAgentNFT is ERC721 {
         _safeMint(msg.sender, nextTokenId);
         nextTokenId++;
     }
+
+    /// @notice Mint a new agent NFT to a specific address
+    /// @dev This allows minting to any address
+    /// @param to The address that will own the minted NFT
+    function mintTo(address to) external {
+        require(to != address(0), "Cannot mint to zero address");
+        _safeMint(to, nextTokenId);
+        nextTokenId++;
+    }
 }
-
-

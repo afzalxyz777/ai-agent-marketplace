@@ -1,7 +1,7 @@
-// frontend/src/app/page.tsx
+// frontend/src/app/mint/page.tsx
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { ethers } from 'ethers'
 import { AIAgentNFT_ADDRESS, AIAgentNFT_ABI } from '@/constants/AIAgentNFT'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
@@ -13,56 +13,37 @@ const MintingPage = () => {
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    console.log('AIAgentNFT_ABI', AIAgentNFT_ABI)
-    console.log('AIAgentNFT_ADDRESS', AIAgentNFT_ADDRESS)
-
-    if (!AIAgentNFT_ABI || !Array.isArray(AIAgentNFT_ABI)) {
-      setError('Contract ABI is invalid')
-    }
-    if (!AIAgentNFT_ADDRESS) {
-      setError('Contract address is missing')
-    }
-  }, [])
-
   const mintNFT = async () => {
     setMinting(true)
     setSuccess(null)
     setError(null)
 
     try {
-      if (!AIAgentNFT_ABI || !Array.isArray(AIAgentNFT_ABI)) {
-        throw new Error('Invalid contract ABI')
-      }
-      if (!AIAgentNFT_ADDRESS) {
-        throw new Error('Contract address is missing')
-      }
-
-      if (typeof window.ethereum === 'undefined') {
+      if (!window.ethereum) {
         throw new Error('MetaMask or another Ethereum provider is required')
       }
 
-      const provider = new ethers.BrowserProvider(window.ethereum as any)
+      const provider = new ethers.BrowserProvider(window.ethereum)
       const signer = await provider.getSigner()
       const network = await provider.getNetwork()
-
       const chainId = Number(network.chainId)
-      if (chainId !== 31337) {
-        throw new Error(`Please switch to the local Anvil network (chainId 31337). Current: ${chainId}`)
+
+      // Allow both Sepolia and local network
+      if (chainId !== 11155111 && chainId !== 31337) {
+        throw new Error(`Please switch to Sepolia or local network. Current: ${chainId}`)
       }
 
       const contract = new ethers.Contract(AIAgentNFT_ADDRESS, AIAgentNFT_ABI, signer)
-
       const tx = await contract.mint()
-      console.log("Transaction:", tx)
-
+      console.log("Transaction sent:", tx.hash)
+      
       const receipt = await tx.wait()
-      console.log("Receipt:", receipt)
-
-      setSuccess(`Minted! Tx Hash: ${receipt.hash}`)
+      console.log("Transaction confirmed:", receipt)
+      
+      setSuccess(`Successfully minted! Transaction: ${receipt.hash}`)
     } catch (err: any) {
       console.error("Minting error:", err)
-      setError(String(err?.message || 'Transaction failed'))
+      setError(err?.message || 'Transaction failed')
     } finally {
       setMinting(false)
     }
