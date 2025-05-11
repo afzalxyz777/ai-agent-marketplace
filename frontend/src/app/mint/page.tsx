@@ -30,12 +30,12 @@ const MintingPage = () => {
 
       const provider = new ethers.BrowserProvider(window.ethereum)
       const signer = await provider.getSigner()
-      
+
       // Create contract instance
       const contract = new ethers.Contract(AIAgentNFT_ADDRESS, AIAgentNFT_ABI, signer)
 
-      // Call mintTo function with the user's address
-      const tx = await contract.mintTo(address)
+      // Call mint function (without parameters)
+      const tx = await contract.mint()
       console.log("Transaction sent:", tx.hash)
       
       // Wait for transaction confirmation
