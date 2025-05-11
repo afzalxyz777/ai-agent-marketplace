@@ -14,7 +14,7 @@ const MintingPage = () => {
   const [error, setError] = useState<string | null>(null)
 
   const mintNFT = async () => {
-    if (!isConnected) {
+    if (!isConnected || !address) {
       setError('Please connect your wallet first')
       return
     }
@@ -34,8 +34,8 @@ const MintingPage = () => {
       // Create contract instance
       const contract = new ethers.Contract(AIAgentNFT_ADDRESS, AIAgentNFT_ABI, signer)
 
-      // Call mint function without parameters
-      const tx = await contract.mint()
+      // Call mintTo function with the user's address
+      const tx = await contract.mintTo(address)
       console.log("Transaction sent:", tx.hash)
       
       // Wait for transaction confirmation

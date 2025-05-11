@@ -1,6 +1,7 @@
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   webpack: (config) => {
     config.plugins = config.plugins || [];
     config.plugins.push(new NodePolyfillPlugin());
@@ -16,4 +17,19 @@ module.exports = {
     };
     return config;
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'unsafe-none'
+          }
+        ]
+      }
+    ];
+  }
 };
+
+module.exports = nextConfig;
