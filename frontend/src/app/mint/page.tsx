@@ -33,8 +33,9 @@ const MintingPage = () => {
       // Create contract instance
       const contract = new ethers.Contract(AIAgentNFT_ADDRESS, AIAgentNFT_ABI, signer)
 
-      // Call mintTo function with the user's address
-      const tx = await contract.mintTo(address)
+      // Call mint function instead of mintTo since both achieve the same result
+      // mint() will mint to msg.sender which is the connected wallet address
+      const tx = await contract.mint()
       console.log("Transaction sent:", tx.hash)
       
       // Wait for transaction confirmation
